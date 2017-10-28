@@ -19,11 +19,16 @@ class Searches():
         data_elements = ''
         self.search_value = list(self.search_value)
         # Changed from empty list to variable
+        firstline = True  # Skip header line in .CSV file
         for row in csv_file:
-            data_elements = list(
-                row[column] for column in [int(self.search_column)])
-            self.search_value.append(data_elements[0])
-            print(data_elements[0])
+            if firstline:
+                firstline = False
+                continue
+            else:
+                data_elements = list(
+                    row[column] for column in [int(self.search_column)])
+                self.search_value.append(data_elements[0])
+                print(data_elements[0])
 
     def print_results(self, search_value):
         """Shows the user multiple output rows based
@@ -113,17 +118,34 @@ class Searches():
             data = file.read()
             file.close()
             os.system('clear')
-            print("Select whatever regex you wish to search for:")
+            print("Select whatever regex or value you wish to search for:")
             print("For example: \d would return Unicode digits from 0 to 9")
-            regex_string = input('\nPlease enter a regex: ')
+            regex_string = input('\nPlease enter a regex or value: ')
             regex_results = (re.findall(regex_string, data))
-            print('\nYou found {} values!'.format(len(regex_results)))
+            regex_results_list = (list(set(regex_results)))
+            with open('data.csv', 'rt') as f:
+                reader = csv.reader(f)
+                returned_values = []
+                for row in reader:
+                    for field in row:
+                        for item in regex_results_list:
+                            if item in field:  # Match field to search value
+                                if row not in returned_values:  # Prevent Dupes
+                                    returned_values.append(row)
+            print('\nYou found {} instances of this criterion and {} values!'
+                  .format(len(regex_results), len(returned_values)))
             next_step = input('Would you like to see the results? (y/n): ')
             if next_step.lower() == 'n':
                 continue
             elif next_step.lower() == 'y':
-                for items in regex_results:
-                    self.print_results(items)
+                os.system('clear')
+                print("HERE'S YOUR DATA!!!")
+                titles = ['DATE', 'TITLE', 'TIME', 'NOTES']
+                for x in returned_values:  # Make list readable
+                    dictionary = dict(zip(titles, x))  # Convert to dict
+                    for key, value in dictionary.items():
+                        print(key + ':', value)
+                    print('\n')
                 input("\nPress ENTER to Return to Main Menu")
                 break
             else:

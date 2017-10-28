@@ -175,8 +175,6 @@ To install the project download all files to a location of your choosing on your
 
 python3 -i work_log.py
 
-*Be sure to import the os, csv, datetime, and re libraries.*
-
 
 Tests
 
