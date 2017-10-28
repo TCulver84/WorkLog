@@ -17,7 +17,8 @@ class Searches():
          based on selected search type"""
         csv_file = csv.reader(open('data.csv', "r"))
         data_elements = ''
-        self.search_value = []
+        self.search_value = list(self.search_value)
+        # Changed from empty list to variable
         for row in csv_file:
             data_elements = list(
                 row[column] for column in [int(self.search_column)])
